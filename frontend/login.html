@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login - Smart Healthcare Navigator</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #075985,
+                    #087f8c
+                );
+
+        }
+
+
+        .login-container {
+
+            width: 400px;
+
+            max-width: 90%;
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0,0,0,0.2);
+
+        }
+
+
+        .hospital-icon {
+
+            font-size: 45px;
+
+            text-align: center;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        h1 {
+
+            text-align: center;
+
+            color: #075985;
+
+            margin-bottom: 8px;
+
+            font-size: 25px;
+
+        }
+
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #667085;
+
+            margin-bottom: 30px;
+
+            font-size: 14px;
+
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        label {
+
+            margin-bottom: 7px;
+
+            font-weight: bold;
+
+            color: #243447;
+
+        }
+
+
+        input {
+
+            padding: 13px;
+
+            border:
+
+                1px solid #d0d5dd;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            outline: none;
+
+        }
+
+
+        input:focus {
+
+            border-color: #087f8c;
+
+            box-shadow:
+
+                0 0 0 3px
+                rgba(8,127,140,0.12);
+
+        }
+
+
+        button {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #087f8c;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        button:hover {
+
+            background: #075985;
+
+        }
+
+
+        #loginMessage {
+
+            margin-top: 15px;
+
+            text-align: center;
+
+            font-weight: bold;
+
+        }
+
+
+        .demo {
+
+            margin-top: 20px;
+
+            padding: 12px;
+
+            background: #f0f9ff;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            color: #475569;
+
+            text-align: center;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="login-container">
+
+
+        <div class="hospital-icon">
+
+            🏥
+
+        </div>
+
+
+        <h1>
+
+            Smart Healthcare Navigator
+
+        </h1>
+
+
+        <p class="subtitle">
+
+            Login to access the hospital dashboard
+
+        </p>
+
+
+        <form id="loginForm">
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label>
+
+                    Username
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter username"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label>
+
+                    Password
+
+                </label>
+
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- LOGIN BUTTON -->
+
+            <button
+                type="submit"
+            >
+
+                🔐 Login
+
+            </button>
+
+
+        </form>
+
+
+        <p id="loginMessage"></p>
+
+
+        <div class="demo">
+
+            <strong>Demo Login</strong>
+
+            <br>
+
+            Username: admin
+
+            <br>
+
+            Password: admin123
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        document
+            .getElementById("loginForm")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const username =
+                        document
+                            .getElementById("username")
+                            .value
+                            .trim();
+
+
+                    const password =
+                        document
+                            .getElementById("password")
+                            .value;
+
+
+                    const loginMessage =
+                        document
+                            .getElementById(
+                                "loginMessage"
+                            );
+
+
+                    try {
+
+
+                        const response =
+                            await fetch(
+                                "/login",
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json"
+
+                                    },
+
+                                    body:
+
+                                        JSON.stringify({
+
+                                            username:
+                                                username,
+
+                                            password:
+                                                password
+
+                                        })
+
+                                }
+                            );
+
+
+                        const result =
+                            await response.json();
+
+
+                        if (
+                            response.ok
+                        ) {
+
+
+                            loginMessage.style.color =
+                                "#16a34a";
+
+
+                            loginMessage.innerText =
+                                "✅ Login successful";
+
+
+                            setTimeout(
+                                function() {
+
+                                    window.location.href =
+                                        "/";
+
+                                },
+                                500
+                            );
+
+                        }
+
+                        else {
+
+
+                            loginMessage.style.color =
+                                "#dc2626";
+
+
+                            loginMessage.innerText =
+                                "❌ " +
+                                result.message;
+
+                        }
+
+
+                    }
+
+                    catch(error) {
+
+
+                        console.error(
+                            error
+                        );
+
+
+                        loginMessage.style.color =
+                            "#dc2626";
+
+
+                        loginMessage.innerText =
+                            "❌ Unable to connect to server";
+
+                    }
+
+
+                }
+            );
+
+
+    </script>
+
+
+</body>
+
+</html>

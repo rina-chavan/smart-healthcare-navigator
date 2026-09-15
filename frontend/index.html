@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Healthcare Navigator</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f8fb;
+    color:#263238;
+}
+
+button,input,select,textarea{
+    font-family:inherit;
+}
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:240px;
+    height:100vh;
+    background:linear-gradient(180deg,#087f8c,#005f73);
+    color:white;
+    padding:25px 15px;
+    z-index:1000;
+}
+
+.sidebar h2{
+    text-align:center;
+    font-size:20px;
+    margin-bottom:30px;
+}
+
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar li{
+    margin-bottom:8px;
+}
+
+.sidebar a{
+    display:block;
+    text-decoration:none;
+    color:white;
+    padding:13px 15px;
+    border-radius:8px;
+}
+
+.sidebar a:hover{
+    background:rgba(255,255,255,.15);
+}
+
+header{
+    margin-left:240px;
+    min-height:80px;
+    padding:18px 30px;
+    background:linear-gradient(90deg,#087f8c,#168aad);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.header-title h1{
+    font-size:24px;
+    margin-bottom:5px;
+}
+
+.header-title p{
+    font-size:13px;
+}
+
+.logout-btn{
+    background:white;
+    color:#087f8c;
+    text-decoration:none;
+    padding:10px 18px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+main{
+    margin-left:240px;
+    padding:25px;
+}
+
+.section{
+    background:white;
+    border-radius:14px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 4px 15px rgba(0,0,0,.06);
+}
+
+.section h2{
+    color:#087f8c;
+    margin-bottom:8px;
+}
+
+.section-description{
+    color:#667085;
+    font-size:14px;
+    margin-bottom:22px;
+}
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+.dashboard-card{
+    background:#f8fbfd;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:20px;
+    text-align:center;
+}
+
+.dashboard-card h3{
+    font-size:14px;
+    color:#667085;
+    margin-bottom:12px;
+}
+
+.dashboard-card .number{
+    font-size:32px;
+    font-weight:bold;
+    color:#087f8c;
+}
+
+.priority-dashboard{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin-top:20px;
+}
+
+.priority-card{
+    padding:18px;
+    border-radius:12px;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    text-align:center;
+}
+
+.priority-card h3{
+    font-size:15px;
+    margin-bottom:10px;
+}
+
+.priority-card strong{
+    font-size:28px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group.full-width{
+    grid-column:1/-1;
+}
+
+.form-group label{
+    font-size:14px;
+    font-weight:bold;
+    color:#334155;
+    margin-bottom:7px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    min-height: 55px;
+    height: 60px;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.form-group textarea{
+    resize:vertical;
+    min-height:90px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    border-color:#168aad;
+}
+
+.recommendation-box{
+    margin-top:15px;
+    padding:14px;
+    border-radius:9px;
+    background:#eef8fa;
+    border-left:4px solid #168aad;
+    font-size:14px;
+}
+
+.ml-message{
+    margin-top:12px;
+    padding:12px;
+    border-radius:8px;
+    background:#f1f8e9;
+    color:#33691e;
+    font-size:14px;
+}
+
+.message{
+    margin-top:15px;
+    padding:12px;
+    border-radius:8px;
+    font-size:14px;
+}
+
+.btn{
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:#087f8c;
+    color:white;
+}
+
+.btn-secondary{
+    background:#e2e8f0;
+    color:#334155;
+}
+
+.form-actions{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+}
+.filter-row{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.search-box,
+.filter-select{
+    width:100%;
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+}
+
+.prediction-box{
+    background:#eef8fa;
+    border:1px solid #cce7eb;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.prediction-box h3{
+    color:#087f8c;
+    margin-bottom:15px;
+}
+
+.prediction-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.prediction-card{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
+    border:1px solid #e2e8f0;
+}
+
+.prediction-card span{
+    display:block;
+    font-size:13px;
+    color:#667085;
+    margin-bottom:8px;
+}
+
+.prediction-card strong{
+    font-size:24px;
+    color:#087f8c;
+}
+
+#predictionMessage{
+    margin-top:15px;
+    color:#475569;
+    font-size:13px;
+}
+
+.table-container{
+    width:100%;
+    overflow-x:auto;
+}
+
+.patient-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:850px;
+}
+
+.patient-table th{
+    background:#087f8c;
+    color:white;
+    padding:12px;
+    text-align:left;
+    font-size:13px;
+}
+
+.patient-table td{
+    padding:12px;
+    border-bottom:1px solid #e2e8f0;
+    font-size:13px;
+}
+
+.priority-high{
+    background:#ffebee;
+    color:#c62828;
+    padding:5px 9px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.priority-medium{
+    background:#fff3e0;
+    color:#ef6c00;
+    padding:5px 9px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.priority-low{
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:5px 9px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.status-waiting{
+    background:#fff8e1;
+    color:#f57f17;
+    padding:5px 9px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.status-consultation{
+    background:#e3f2fd;
+    color:#1565c0;
+    padding:5px 9px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.status-completed{
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:5px 9px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.action-btn{
+    border:none;
+    padding:7px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:12px;
+    margin:2px;
+    font-weight:bold;
+}
+
+.consult-btn{
+    background:#e3f2fd;
+    color:#1565c0;
+}
+
+.complete-btn{
+    background:#e8f5e9;
+    color:#2e7d32;
+}
+.doctor-summary{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+    margin-bottom:20px;
+}
+
+.doctor-summary-card{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:18px;
+    text-align:center;
+}
+
+.doctor-summary-card h3{
+    color:#667085;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+.doctor-summary-card strong{
+    font-size:28px;
+    color:#087f8c;
+}
+
+.doctor-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.doctor-card{
+    background:white;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:18px;
+}
+
+.doctor-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.doctor-icon{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:#e0f2f1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:23px;
+}
+
+.availability{
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.available{
+    background:#e8f5e9;
+    color:#2e7d32;
+}
+
+.unavailable{
+    background:#ffebee;
+    color:#c62828;
+}
+
+.doctor-card h3{
+    color:#334155;
+    margin-bottom:6px;
+}
+
+.doctor-card p{
+    color:#667085;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.department-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.department{
+    background:white;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:20px;
+}
+
+.department-icon{
+    font-size:32px;
+    margin-bottom:12px;
+}
+
+.department h3{
+    color:#334155;
+    margin-bottom:8px;
+}
+
+.department p{
+    color:#667085;
+    font-size:13px;
+    line-height:1.5;
+    margin-bottom:12px;
+}
+
+.department-status{
+    color:#2e7d32;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.analytics-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.analytics-card{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:18px;
+    text-align:center;
+}
+
+.analytics-card h3{
+    font-size:13px;
+    color:#667085;
+    margin-bottom:10px;
+}
+
+.analytics-card strong{
+    font-size:27px;
+    color:#087f8c;
+}
+
+.analytics-panel{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.analytics-panel h3{
+    color:#087f8c;
+    margin-bottom:15px;
+}
+
+@media(max-width:1100px){
+    .dashboard{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .doctor-grid,
+    .department-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .prediction-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+@media(max-width:800px){
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    header,main,footer{
+        margin-left:0;
+    }
+
+    .sidebar ul{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .filter-row{
+        grid-template-columns:1fr;
+    }
+
+    .analytics-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+    header{
+        padding:15px;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:12px;
+    }
+
+    main{
+        padding:12px;
+    }
+
+    .section{
+        padding:17px;
+    }
+
+    .dashboard,
+    .priority-dashboard,
+    .doctor-grid,
+    .department-grid,
+    .prediction-grid,
+    .analytics-grid,
+    .doctor-summary{
+        grid-template-columns:1fr;
+    }
+}
+/* Smaller Symptoms Box */
+#symptoms {
+    width: 100%;
+    height: 60px;
+    min-height: 60px;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+}
+/* ==========================================
+   CORRECT SECTION ORDER
+========================================== */
+
+main{
+    display:flex;
+    flex-direction:column;
+}
+
+#dashboardSection{
+    order:1;
+}
+
+#patients-section{
+    order:2;
+}
+
+#doctors-section{
+    order:3;
+}
+
+#departments-section{
+    order:4;
+}
+
+#queueSection{
+    order:5;
+}
+
+#analyticsSection{
+    order:6;
+}
+
+#settingsSection{
+    order:7;
+}
+
+/* ==========================================
+   COLORFUL SMART DASHBOARD
+========================================== */
+
+#dashboardSection .dashboard {
+    gap: 20px;
+}
+
+#dashboardSection .dashboard-card {
+    border: none;
+    border-radius: 18px;
+    padding: 22px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease,
+                box-shadow 0.25s ease;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+#dashboardSection .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+}
+
+/* Dashboard card colors */
+
+#dashboardSection .dashboard-card:nth-child(1) {
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+    border-left: 6px solid #2563eb;
+}
+
+#dashboardSection .dashboard-card:nth-child(2) {
+    background: linear-gradient(135deg, #fef3c7, #fff7ed);
+    border-left: 6px solid #f59e0b;
+}
+
+#dashboardSection .dashboard-card:nth-child(3) {
+    background: linear-gradient(135deg, #dcfce7, #ecfdf5);
+    border-left: 6px solid #16a34a;
+}
+
+#dashboardSection .dashboard-card:nth-child(4) {
+    background: linear-gradient(135deg, #e0e7ff, #eef2ff);
+    border-left: 6px solid #6366f1;
+}
+
+/* Dashboard numbers */
+
+#dashboardSection .dashboard-card strong {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+/* Priority cards */
+
+#dashboardSection .priority-dashboard {
+    gap: 18px;
+}
+
+#dashboardSection .priority-card {
+    position:relative;
+    border-radius: 18px;
+    padding: 20px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    transition: transform 0.25s ease;
+}
+
+#dashboardSection .priority-card:hover {
+    transform: translateY(-4px);
+}
+
+#dashboardSection .priority-card:nth-child(1) {
+    background: linear-gradient(135deg, #fee2e2, #fff1f2);
+    border-left: 6px solid #dc2626;
+}
+
+#dashboardSection .priority-card:nth-child(2) {
+    background: linear-gradient(135deg, #ffedd5, #fff7ed);
+    border-left: 6px solid #f97316;
+}
+
+#dashboardSection .priority-card:nth-child(3) {
+    background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+    border-left: 6px solid #22c55e;
+}
+
+/* Dashboard heading */
+
+#dashboardSection h2 {
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+/* Small shine effect */
+
+#dashboardSection .dashboard-card::after,
+#dashboardSection .priority-card::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    right: -30px;
+    top: -30px;
+    background: rgba(255,255,255,0.45);
+    border-radius: 50%;
+}
+/* =====================================================
+   PROFESSIONAL HEALTHCARE THEME
+   COLORFUL DESIGN FOR ALL SECTIONS
+   CSS ONLY - NO FUNCTIONALITY CHANGES
+===================================================== */
+
+
+/* =====================================================
+   COMMON SECTION DESIGN
+===================================================== */
+
+.section {
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+}
+
+.section h2 {
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   PATIENT REGISTRATION
+===================================================== */
+
+#patients-section {
+    background: linear-gradient(
+        135deg,
+        #eff6ff,
+        #f0fdfa
+    );
+    border-left: 6px solid #2563eb;
+}
+
+#patients-section .form-grid {
+    background: rgba(255,255,255,0.75);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #dbeafe;
+}
+
+#patients-section .form-group input,
+#patients-section .form-group select,
+#patients-section .form-group textarea {
+    border: 2px solid #dbeafe;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+#patients-section .form-group input:focus,
+#patients-section .form-group select:focus,
+#patients-section .form-group textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.10);
+    outline: none;
+}
+
+#patients-section .form-actions {
+    margin-top: 18px;
+}
+
+
+/* =====================================================
+   SMART DOCTOR RECOMMENDATION
+===================================================== */
+
+#doctorRecommendation {
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(14,165,233,0.12);
+}
+
+
+/* =====================================================
+   ML PRIORITY MESSAGE
+===================================================== */
+
+#mlPriorityMessage {
+    border-radius: 15px;
+    margin-top: 12px;
+    box-shadow: 0 5px 15px rgba(99,102,241,0.10);
+}
+
+
+/* =====================================================
+   PATIENT QUEUE
+===================================================== */
+
+#queueSection {
+    background: linear-gradient(
+        135deg,
+        #f0f9ff,
+        #eef2ff
+    );
+    border-left: 6px solid #0ea5e9;
+}
+
+
+/* Queue prediction cards */
+
+#queueSection .prediction-grid {
+    gap: 18px;
+}
+
+#queueSection .prediction-card {
+    border: none;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+    transition: transform 0.2s ease;
+    background: #ffffff;
+}
+
+#queueSection .prediction-card:hover {
+    transform: translateY(-4px);
+}
+
+
+/* Different prediction colours */
+
+#queueSection .prediction-card:nth-child(1) {
+    background: linear-gradient(
+        135deg,
+        #fee2e2,
+        #fff1f2
+    );
+    border-left: 5px solid #dc2626;
+}
+
+#queueSection .prediction-card:nth-child(2) {
+    background: linear-gradient(
+        135deg,
+        #dbeafe,
+        #eff6ff
+    );
+    border-left: 5px solid #2563eb;
+}
+
+#queueSection .prediction-card:nth-child(3) {
+    background: linear-gradient(
+        135deg,
+        #dcfce7,
+        #f0fdf4
+    );
+    border-left: 5px solid #16a34a;
+}
+
+#queueSection .prediction-card:nth-child(4) {
+    background: linear-gradient(
+        135deg,
+        #fef3c7,
+        #fff7ed
+    );
+    border-left: 5px solid #f59e0b;
+}
+
+
+/* Queue search area */
+
+#queueSection .filter-row {
+    background: rgba(255,255,255,0.8);
+    padding: 14px;
+    border-radius: 15px;
+    border: 1px solid #dbeafe;
+}
+
+
+/* Queue table */
+
+#queueSection .table-container {
+    border-radius: 16px;
+    overflow-x: auto;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+}
+
+#queueSection .patient-table {
+    background: #ffffff;
+}
+
+#queueSection .patient-table th {
+    background: linear-gradient(
+        135deg,
+        #1e40af,
+        #0369a1
+    );
+    color: white;
+    font-weight: 700;
+    padding: 14px;
+}
+
+#queueSection .patient-table td {
+    padding: 13px;
+}
+
+#queueSection .patient-table tbody tr:hover {
+    background: #f0f9ff;
+}
+
+
+/* =====================================================
+   DOCTOR MANAGEMENT
+===================================================== */
+
+#doctors-section {
+    background: linear-gradient(
+        135deg,
+        #ecfdf5,
+        #eff6ff
+    );
+    border-left: 6px solid #16a34a;
+}
+
+#doctors-section .doctor-summary {
+    gap: 20px;
+}
+
+#doctors-section .doctor-summary-card {
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(
+        135deg,
+        #dcfce7,
+        #ecfdf5
+    );
+    box-shadow: 0 8px 20px rgba(22,163,74,0.10);
+    border-left: 5px solid #16a34a;
+}
+
+
+/* Doctor cards */
+
+#doctors-section .doctor-card {
+    border: none;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(15,23,42,0.09);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#doctors-section .doctor-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(15,23,42,0.14);
+}
+
+#doctors-section .doctor-card::before {
+    content: "";
+    display: block;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #06b6d4,
+        #16a34a
+    );
+}
+
+#doctors-section .doctor-icon {
+    box-shadow: 0 5px 12px rgba(37,99,235,0.15);
+}
+
+#doctors-section .available {
+    background: #dcfce7;
+    color: #15803d;
+    border-radius: 10px;
+    padding: 7px 10px;
+    font-weight: 700;
+}
+
+#doctors-section .unavailable {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 10px;
+    padding: 7px 10px;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   DEPARTMENTS
+===================================================== */
+
+#departments-section {
+    background: linear-gradient(
+        135deg,
+        #eef2ff,
+        #f5f3ff
+    );
+    border-left: 6px solid #6366f1;
+}
+
+#departments-section .department {
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 22px rgba(15,23,42,0.08);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#departments-section .department::before {
+    content: "";
+    display: block;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        #6366f1,
+        #8b5cf6,
+        #06b6d4
+    );
+}
+
+#departments-section .department:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(99,102,241,0.14);
+}
+
+#departments-section .department-icon {
+    background: linear-gradient(
+        135deg,
+        #dbeafe,
+        #ede9fe
+    );
+    border-radius: 15px;
+    padding: 12px;
+}
+
+
+/* =====================================================
+   ANALYTICS
+===================================================== */
+
+#analyticsSection {
+    background: linear-gradient(
+        135deg,
+        #f0fdfa,
+        #eff6ff
+    );
+    border-left: 6px solid #0d9488;
+}
+
+
+/* Analytics cards */
+
+#analyticsSection .analytics-card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+    transition: all 0.2s ease;
+    background: #ffffff;
+}
+
+#analyticsSection .analytics-card:hover {
+    transform: translateY(-5px);
+}
+
+#analyticsSection .analytics-card:nth-child(1) {
+    background: linear-gradient(
+        135deg,
+        #dbeafe,
+        #eff6ff
+    );
+    border-left: 5px solid #2563eb;
+}
+
+#analyticsSection .analytics-card:nth-child(2) {
+    background: linear-gradient(
+        135deg,
+        #dcfce7,
+        #f0fdf4
+    );
+    border-left: 5px solid #16a34a;
+}
+
+#analyticsSection .analytics-card:nth-child(3) {
+    background: linear-gradient(
+        135deg,
+        #fef3c7,
+        #fff7ed
+    );
+    border-left: 5px solid #f59e0b;
+}
+
+#analyticsSection .analytics-card:nth-child(4) {
+    background: linear-gradient(
+        135deg,
+        #fee2e2,
+        #fff1f2
+    );
+    border-left: 5px solid #dc2626;
+}
+
+#analyticsSection .analytics-card:nth-child(5) {
+    background: linear-gradient(
+        135deg,
+        #ffedd5,
+        #fff7ed
+    );
+    border-left: 5px solid #f97316;
+}
+
+#analyticsSection .analytics-card:nth-child(6) {
+    background: linear-gradient(
+        135deg,
+        #dcfce7,
+        #f0fdf4
+    );
+    border-left: 5px solid #22c55e;
+}
+
+
+/* Analytics panels */
+
+#analyticsSection .analytics-panel {
+    background: rgba(255,255,255,0.85);
+    border: 1px solid #dbeafe;
+    border-radius: 18px;
+    box-shadow: 0 7px 18px rgba(15,23,42,0.06);
+    margin-top: 20px;
+}
+
+#analyticsSection .analytics-panel h3 {
+    color: #1e3a8a;
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+#settingsSection {
+    background: linear-gradient(
+        135deg,
+        #f8fafc,
+        #eef2ff
+    );
+    border-left: 6px solid #64748b;
+}
+
+#settingsSection .settings-box {
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.07);
+    border: 1px solid #e2e8f0;
+}
+
+#settingsSection .setting-item {
+    transition: background 0.2s ease;
+}
+
+#settingsSection .setting-item:hover {
+    background: #f8fafc;
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.btn {
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    box-shadow: 0 6px 15px rgba(37,99,235,0.20);
+}
+
+.btn-secondary {
+    box-shadow: 0 5px 12px rgba(100,116,139,0.12);
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:800px) {
+
+    .section {
+        border-radius: 15px;
+    }
+
+    #queueSection .patient-table {
+        min-width: 1000px;
+    }
+
+}
+
+@media(max-width:600px) {
+
+    .section {
+        padding: 15px;
+    }
+
+    #patients-section .form-grid {
+        padding: 12px;
+    }
+
+    #queueSection .prediction-card,
+    #analyticsSection .analytics-card,
+    #doctors-section .doctor-card,
+    #departments-section .department {
+        border-radius: 14px;
+    }
+
+}
+/* ==========================================
+   FIX CONSULTATION STATUS VISIBILITY
+========================================== */
+
+.status-consultation {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    min-width: 150px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.patient-table td {
+    vertical-align: middle;
+}
+
+.patient-table td:nth-child(10) {
+    white-space: nowrap;
+    min-width: 160px;
+}
+/* ==========================================
+   SETTINGS - SAFE DESIGN ONLY
+   Does not affect other sections
+========================================== */
+
+#settingsSection .settings-box {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#settingsSection .setting-item {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(15, 23, 42, 0.06);
+}
+
+#settingsSection .setting-item > div:first-child {
+    padding: 16px 18px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #eff6ff, #f8fafc);
+    color: #1e3a8a;
+}
+
+#settingsSection .setting-item > div:first-child:hover {
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+}
+
+#settingsSection .setting-item p {
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+#settingsSection .setting-item strong {
+    color: #1e293b;
+}
+.setting-details {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <h2>🏥 Smart Healthcare</h2>
+
+    <ul>
+        <li><a href="#dashboardSection">📊 Dashboard</a></li>
+        <li><a href="#patients-section">👥 Patients</a></li>
+        <li><a href="#doctors-section">👨‍⚕️ Doctors</a></li>
+        <li><a href="#departments-section">🏥 Departments</a></li>
+        <li><a href="#queueSection">🕐 Queue</a></li>
+        <li><a href="#analyticsSection">📈 Analytics</a></li>
+        <li><a href="#settingsSection">⚙️ Settings</a></li>
+    </ul>
+
+</aside>
+
+<header>
+
+    <div class="header-title">
+        <h1>🏥 Smart Healthcare Navigator</h1>
+        <p>Smart • Safe • Patient-Centered</p>
+    </div>
+
+    <a href="/logout" class="logout-btn">Logout</a>
+
+</header>
+
+<main>
+
+<section class="section" id="dashboardSection">
+
+    <h2>📊 Smart Healthcare Navigator Dashboard</h2>
+
+    <p class="section-description">
+        Overview of patients, queue status and priority distribution.
+    </p>
+
+    <div class="dashboard">
+
+        <div class="dashboard-card">
+            <h3>Total Patients</h3>
+            <div class="number" id="totalPatients">0</div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Waiting Patients</h3>
+            <div class="number" id="waitingPatients">0</div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>In Consultation</h3>
+            <div class="number" id="consultationPatients">0</div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Completed</h3>
+            <div class="number" id="completedPatients">0</div>
+        </div>
+
+    </div>
+
+    <div class="priority-dashboard">
+
+        <div class="priority-card">
+            <h3>🔴 High Priority</h3>
+            <strong id="highPatients">0</strong>
+        </div>
+
+        <div class="priority-card">
+            <h3>🟠 Medium Priority</h3>
+            <strong id="mediumPatients">0</strong>
+        </div>
+
+        <div class="priority-card">
+            <h3>🟢 Low Priority</h3>
+            <strong id="lowPatients">0</strong>
+        </div>
+
+    </div>
+
+</section>
+<section class="section" id="patients-section">
+
+<h2>👥 Patient Registration</h2>
+
+<p class="section-description">
+Register a patient and assign department, doctor and priority.
+</p>
+
+<form id="patientForm">
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Patient Name</label>
+<input type="text" id="name" name="name"
+placeholder="Enter patient name" required>
+</div>
+
+<div class="form-group">
+<label>Age</label>
+<input type="number" id="age" name="age"
+placeholder="Enter age" min="1" max="120" required>
+</div>
+
+<div class="form-group">
+<label>Gender</label>
+<select id="gender" name="gender" required>
+<option value="">Select Gender</option>
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Department</label>
+<select id="department" name="department" required>
+<option value="">Select Department</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Doctor</label>
+<select id="doctor" name="doctor" required>
+<option value="">Select Doctor</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Priority</label>
+<select id="priority" name="priority" required>
+<option value="">Select Priority</option>
+<option value="High">🔴 High</option>
+<option value="Medium">🟠 Medium</option>
+<option value="Low">🟢 Low</option>
+</select>
+</div>
+
+<div class="form-group full-width">
+<label>Symptoms</label>
+<textarea id="symptoms" name="symptoms"
+placeholder="Enter patient's symptoms" required></textarea>
+</div>
+
+</div>
+
+<div id="doctorRecommendation"
+class="recommendation-box"
+style="display:none;"></div>
+
+<div id="mlPriorityMessage"
+class="ml-message"
+style="display:none;"></div>
+
+<div class="form-actions">
+<button type="submit" class="btn btn-primary">
+Register Patient
+</button>
+
+<button type="reset" class="btn btn-secondary">
+Clear
+</button>
+</div>
+
+<div id="message" class="message"></div>
+
+</form>
+
+</section>
+
+
+
+
+
+<section class="section" id="analyticsSection">
+
+<h2>📈 Analytics</h2>
+
+<p class="section-description">
+Hospital patient, priority and workload analytics.
+</p>
+
+<div class="analytics-grid">
+
+<div class="analytics-card">
+<h3>Departments</h3>
+<strong id="analyticsDepartmentCount">0</strong>
+</div>
+
+<div class="analytics-card">
+<h3>Doctors</h3>
+<strong id="analyticsDoctorCount">0</strong>
+</div>
+
+<div class="analytics-card">
+<h3>Average Wait</h3>
+<strong id="analyticsAverageWait">0 min</strong>
+</div>
+
+<div class="analytics-card">
+<h3>High Priority</h3>
+<strong id="analyticsHigh">0</strong>
+</div>
+
+<div class="analytics-card">
+<h3>Medium Priority</h3>
+<strong id="analyticsMedium">0</strong>
+</div>
+
+<div class="analytics-card">
+<h3>Low Priority</h3>
+<strong id="analyticsLow">0</strong>
+</div>
+
+</div>
+
+<div class="analytics-panel">
+
+<h3>🏥 Department Analytics</h3>
+<div id="departmentAnalytics"></div>
+
+</div>
+
+<div class="analytics-panel">
+
+<h3>👨‍⚕️ Doctor Analytics</h3>
+<div id="doctorAnalytics"></div>
+
+</div>
+</section>
+<section class="section" id="settingsSection">
+
+<h2>⚙️ Settings</h2>
+
+<p class="section-description">
+Smart Healthcare Navigator system information and configuration.
+</p>
+
+<div class="settings-box">
+
+<div class="setting-item">
+<div>
+<strong>🏥 Hospital System</strong>
+<span>Smart Healthcare Navigator</span>
+</div>
+<b>＋</b>
+</div>
+
+<div class="setting-details">
+<p><strong>System:</strong> Smart Healthcare Navigator</p>
+<p><strong>Purpose:</strong> Manage patients, doctors and hospital queues.</p>
+<p><strong>System Type:</strong> Web-based healthcare management system.</p>
+</div>
+
+<div class="setting-item">
+<div>
+<strong>👥 Patient Management</strong>
+<span>Enabled</span>
+</div>
+<b>＋</b>
+</div>
+
+<div class="setting-details">
+<p>✔ Patient registration</p>
+<p>✔ Patient information stored in MySQL</p>
+<p>✔ Patient search and filtering</p>
+<p>✔ Patient consultation status tracking</p>
+</div>
+
+<div class="setting-item">
+<div>
+<strong>👨‍⚕️ Doctor Management</strong>
+<span>Enabled</span>
+</div>
+<b>＋</b>
+</div>
+
+<div class="setting-details">
+<p>✔ Doctor availability tracking</p>
+<p>✔ Department-wise doctors</p>
+<p>✔ Doctor workload monitoring</p>
+<p>✔ Smart doctor recommendation</p>
+</div>
+
+<div class="setting-item">
+<div>
+<strong>🕐 Queue Management</strong>
+<span>Priority Based</span>
+</div>
+<b>＋</b>
+</div>
+
+<div class="setting-details">
+<p>✔ High, Medium and Low priority</p>
+<p>✔ Priority-based patient queue</p>
+<p>✔ Estimated waiting time</p>
+<p>✔ Patient status tracking</p>
+<p>✔ ML-based priority prediction</p>
+</div>
+
+<div class="setting-item">
+<div>
+<strong>📊 Database</strong>
+<span>MySQL</span>
+</div>
+<b>＋</b>
+</div>
+
+<div class="setting-details">
+<p><strong>Database:</strong> MySQL</p>
+<p>✔ Patient records stored securely</p>
+<p>✔ Doctor information stored in database</p>
+<p>✔ Data retrieved dynamically by the system</p>
+</div>
+
+</div>
+
+</section>
+
+
+<footer>
+© 2026 Smart Healthcare Navigator | Patient-Centered Healthcare Management
+</footer>
+
+<script src="/script.js"></script>
+
+<script>
+
+document.querySelectorAll(
+'#settingsSection .setting-item'
+).forEach(function(item){
+
+item.addEventListener('click',function(){
+
+const details=this.nextElementSibling;
+const icon=this.querySelector('b');
+
+if(details &&
+details.classList.contains('setting-details')){
+
+const open=details.style.display==='block';
+
+details.style.display=open?'none':'block';
+
+if(icon){
+icon.textContent=open?'＋':'−';
+}
+
+}
+
+});
+
+});
+
+</script>
+<section class="section" id="queueSection">
+
+    <h2>🕐 Patient Queue</h2>
+
+    <p class="section-description">
+        Manage patient priority, waiting time and consultation status.
+    </p>
+
+
+    <!-- ==========================================
+         SMART QUEUE PREDICTION
+    ========================================== -->
+
+    <div class="prediction-box">
+
+        <h3>🧠 Smart Queue Prediction</h3>
+
+        <div class="prediction-grid">
+
+            <div class="prediction-card">
+                <span>🔴 High Priority</span>
+                <strong id="predictionHigh">0</strong>
+            </div>
+
+            <div class="prediction-card">
+                <span>🟡 Waiting</span>
+                <strong id="predictionWaiting">0</strong>
+            </div>
+
+            <div class="prediction-card">
+                <span>🟢 In Consultation</span>
+                <strong id="predictionConsulting">0</strong>
+            </div>
+
+            <div class="prediction-card">
+                <span>⏱️ Estimated Wait</span>
+                <strong id="predictionWaitTime">
+                    0 min
+                </strong>
+            </div>
+
+        </div>
+
+        <p id="predictionMessage">
+            Queue information will appear here.
+        </p>
+
+    </div>
+
+
+    <!-- ==========================================
+         SEARCH AND FILTER
+    ========================================== -->
+
+    <div class="filter-row">
+
+        <div style="
+            display:flex;
+            gap:8px;
+            flex:1;
+        ">
+
+            <input
+                type="text"
+                id="searchPatient"
+                class="search-box"
+                placeholder="Enter patient ID or name..."
+            >
+
+            <button
+                type="button"
+                class="action-btn"
+                onclick="searchPatients()"
+                style="
+                    background:#2563eb;
+                    color:white;
+                    border:none;
+                    padding:10px 18px;
+                "
+            >
+                🔍 Search
+            </button>
+
+        </div>
+
+
+        <select
+            id="doctorFilter"
+            class="filter-select"
+        >
+            <option value="">
+                All Doctors
+            </option>
+        </select>
+
+
+        <button
+            type="button"
+            id="highPriorityButton"
+            class="action-btn"
+            onclick="filterHighPriority()"
+        >
+            🔴 High Priority
+        </button>
+
+
+        <button
+            type="button"
+            class="action-btn"
+            onclick="clearPatientFilters()"
+        >
+            ✕ Clear
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         PATIENT QUEUE TABLE
+    ========================================== -->
+
+    <div class="table-container">
+
+        <table class="patient-table">
+
+            <thead>
+    <tr>
+        <th>Sr. No.</th>
+        <th>Patient ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Symptoms</th>
+        <th>Department</th>
+        <th>Doctor</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Estimated Wait</th>
+        <th>Action</th>
+    </tr>
+</thead>
+
+            <tbody id="patientList">
+
+                <tr>
+
+                    <td
+                        colspan="12"
+                        style="
+                            text-align:center;
+                            padding:30px;
+                        "
+                    >
+                        Loading patients...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+<section class="section" id="doctors-section">
+
+<h2>👨‍⚕️ Doctor Management</h2>
+
+<p class="section-description">
+View doctor availability, department and current workload.
+</p>
+
+<div class="doctor-summary">
+
+<div class="doctor-summary-card">
+<h3>Total Doctors</h3>
+<strong id="totalDoctors">0</strong>
+</div>
+
+<div class="doctor-summary-card">
+<h3>Available Doctors</h3>
+<strong id="availableDoctors">0</strong>
+</div>
+
+</div>
+
+<div id="doctorList" class="doctor-grid"></div>
+
+</section>
+
+
+<section class="section" id="departments-section">
+
+<h2>🏥 Departments</h2>
+
+<p class="section-description">
+Available hospital departments and their services.
+</p>
+
+<div class="department-grid">
+
+<div class="department">
+<div class="department-icon">🩺</div>
+<h3>General Medicine</h3>
+<p>Diagnosis and treatment of common medical conditions.</p>
+<span class="department-status">● Available</span>
+</div>
+
+<div class="department">
+<div class="department-icon">❤️</div>
+<h3>Cardiology</h3>
+<p>Diagnosis and treatment of heart-related conditions.</p>
+<span class="department-status">● Available</span>
+</div>
+
+<div class="department">
+<div class="department-icon">🧠</div>
+<h3>Neurology</h3>
+<p>Care and treatment of nervous system disorders.</p>
+<span class="department-status">● Available</span>
+</div>
+
+<div class="department">
+<div class="department-icon">🦴</div>
+<h3>Orthopedics</h3>
+<p>Treatment of bones, joints and muscle conditions.</p>
+<span class="department-status">● Available</span>
+</div>
+
+<div class="department">
+<div class="department-icon">👁️</div>
+<h3>Ophthalmology</h3>
+<p>Diagnosis and treatment of eye-related conditions.</p>
+<span class="department-status">● Available</span>
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+</body>
+</html>
