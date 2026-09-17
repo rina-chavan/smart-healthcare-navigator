@@ -1596,26 +1596,12 @@ function displayPatients(patients) {
 
 if (normalize(status) === "waiting") {
 
-    const patientsAhead =
-        sortedPatients
-            .slice(0, index)
-            .filter(function(item) {
-
-                if (
-                    normalize(item.status) ===
-                    "completed"
-                ) {
-                    return false;
-                }
-
-                return normalize(item.doctor) ===
-                       normalize(doctor);
-            });
-
     waitingTime =
-        patientsAhead.length * 10;
+        calculateEstimatedWait(
+            patient,
+            allPatients
+        );
 }
-
 
                 // ==================================
                 // PRIORITY STYLE
