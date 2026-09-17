@@ -233,11 +233,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* Load existing database data */
-
+loadPatients().then(() => {
     loadDoctors();
-
-    loadPatients();
-
+});
 
     /* Patient registration */
 
@@ -2114,7 +2112,8 @@ async function completeConsultation(patientId) {
    DOCTOR DISPLAY
 ===================================================== */
 
-function displayDoctors() {
+function displayDoctors(doctorsToDisplay = allDoctors) {
+    doctorsToDisplay = doctorsToDisplay || allDoctors;
 
     const doctorList =
         getElement("doctorList");
@@ -2123,7 +2122,7 @@ function displayDoctors() {
         return;
     }
 
-    if (!allDoctors || allDoctors.length === 0) {
+    if (!doctorsToDisplay || doctorsToDisplay.length === 0) {
 
         doctorList.innerHTML = `
             <div style="
@@ -2143,7 +2142,7 @@ function displayDoctors() {
     }
 
     const availableDoctors =
-        allDoctors.filter(function (doctor) {
+        doctorsToDisplay.filter(function (doctor) {
 
             return normalize(
                 doctor.status
@@ -2153,7 +2152,7 @@ function displayDoctors() {
 
     setText(
         "totalDoctors",
-        allDoctors.length
+        doctorsToDisplay.length
     );
 
     setText(
@@ -2163,7 +2162,7 @@ function displayDoctors() {
 
 
     doctorList.innerHTML =
-        allDoctors.map(function (doctor) {
+        doctorsToDisplay.map(function (doctor) {
 
             const name =
                 doctor.name || "Unknown Doctor";
@@ -2195,7 +2194,8 @@ function displayDoctors() {
 
 
             return `
-                <div class="doctor-card">
+                <div class="doctor-card"
+     onclick="openDoctor('${escapeHTML(name)}')">
 
                     <div class="doctor-top">
 
@@ -2253,6 +2253,108 @@ function displayDoctors() {
             `;
 
         }).join("");
+}
+// =====================================================
+// CLICKABLE DEPARTMENT
+// =====================================================
+
+async function openDepartment(department) {
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/department/${encodeURIComponent(department)}`
+            );
+
+        const doctors =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error("Unable to load doctors");
+        }
+
+        // Keep all doctors; display only selected department
+displayDoctors(doctors);
+
+        // Display doctors
+        displayDoctors();
+
+        // Scroll to Doctor Management section
+        const doctorSection =
+            document.getElementById("doctorManagement");
+
+        if (doctorSection) {
+
+            doctorSection.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Department loading error:",
+            error
+        );
+
+        alert(
+            "Unable to load doctors for this department."
+        );
+    }
+}
+// =====================================================
+// CLICKABLE DOCTOR
+// =====================================================
+
+async function openDoctor(doctorName) {
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/doctor/${encodeURIComponent(doctorName)}/patients`
+            );
+
+        const patients =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error("Unable to load patients");
+        }
+
+        // Store selected doctor's patients separately
+        window.selectedDoctorPatients = patients;
+
+        // Show selected doctor's patients
+        displayPatients(
+            window.selectedDoctorPatients
+        );
+
+        // Scroll to Patient Queue
+        const queueSection =
+            document.getElementById("patientQueue");
+
+        if (queueSection) {
+
+            queueSection.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Doctor loading error:",
+            error
+        );
+
+        alert(
+            "Unable to load patients for this doctor."
+        );
+    }
 }
 
 
@@ -2493,7 +2595,7 @@ function updateDepartmentAnalytics() {
 
 
             return `
-                <div style="
+                <div onclick="openDepartment('${escapeHTML(department)}')" style="
                     padding:18px;
                     margin-bottom:12px;
                     border:1px solid #dbeafe;

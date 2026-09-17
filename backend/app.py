@@ -47,10 +47,12 @@ FRONTEND_FOLDER = os.path.abspath(
 
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Meena@9594#",
-        database="smart_healthcare"
+        host=os.getenv("DB_HOST"),
+        port=int(os.getenv("DB_PORT")),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
+        ssl_disabled=False
     )
 
 
@@ -320,7 +322,6 @@ def update_patient_status(patient_id):
 
 @app.route("/api/doctors", methods=["GET"])
 def get_doctors():
-
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -355,9 +356,47 @@ def get_doctors():
     db.close()
 
     return jsonify(doctors)
+
 # -------------------------------------------------
-# RUN FLASK
+# GET PATIENTS BY DOCTOR
 # -------------------------------------------------
+@app.route("/api/department/<path:department>", methods=["GET"])
+def get_department_doctors(department):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+            d.doctor_id,
+            d.name,
+            d.department,
+            d.status,
+            d.rating,
+            COUNT(
+                CASE
+                    WHEN p.status != 'Completed'
+                    THEN p.patient_id
+                END
+            ) AS patients_count
+        FROM doctors d
+        LEFT JOIN patients p
+            ON p.doctor = d.name
+        WHERE LOWER(d.department) = LOWER(%s)
+        GROUP BY
+            d.doctor_id,
+            d.name,
+            d.department,
+            d.status,
+            d.rating
+        ORDER BY d.doctor_id ASC
+    """, (department,))
+
+    cursor.close()
+    db.close()
+
+    return jsonify(doctors)
+
+    # -------------------------------------------------
 # -------------------------------------------------
 # SMART DOCTOR RECOMMENDATION
 # -------------------------------------------------
@@ -413,6 +452,36 @@ def recommend_doctor(department):
         "recommended": False,
         "message": "No available doctor found in this department"
     })
+    # GET PATIENTS BY DOCTOR
+# -------------------------------------------------
+
+@app.route("/api/doctor/<path:doctor_name>/patients", methods=["GET"])
+def get_doctor_patients(doctor_name):
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT *
+        FROM patients
+        WHERE LOWER(doctor) = LOWER(%s)
+        ORDER BY
+            CASE priority
+                WHEN 'High' THEN 1
+                WHEN 'Medium' THEN 2
+                WHEN 'Low' THEN 3
+                ELSE 4
+            END,
+            patient_id ASC
+    """, (doctor_name,))
+
+    patients = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(patients)
+
     # ==========================================
 # ML-BASED PATIENT PRIORITY PREDICTION
 # ==========================================
